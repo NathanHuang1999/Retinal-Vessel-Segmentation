@@ -3,10 +3,10 @@ from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, BatchNormalization,
 from keras.layers import concatenate, core, Dropout
 from keras.models import Model
 from keras.layers.merge import concatenate
-from keras.optimizers import Adam
-from keras.optimizers import SGD
+from keras.optimizers import adam_v2
 from keras.layers.core import Lambda
 import keras.backend as K
+import tensorflow as tf
 
 from utils.metrics import dice_coef, jacard
 
@@ -75,6 +75,6 @@ def AttentionUNet(input_size = (608,576,1)):
     conv7 = core.Activation('sigmoid')(conv6)
     model = Model(inputs=inputs, outputs=conv7)
 
-    model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy',dice_coef,jacard, tf.keras.metrics.AUC(), tf.keras.metrics.MeanIoU(num_classes=2),
+    model.compile(optimizer = adam_v2.Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy',dice_coef,jacard, tf.keras.metrics.AUC(), tf.keras.metrics.MeanIoU(num_classes=2),
                                                                                         tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
     return model

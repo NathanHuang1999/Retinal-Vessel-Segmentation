@@ -54,7 +54,7 @@ def UNet(pretrained_weights = None,input_size = (608,576,1)):
 
     model = Model(inputs,conv10)
 
-    model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy',dice_coef,jacard, tf.keras.metrics.AUC(), tf.keras.metrics.MeanIoU(num_classes=2),
+    model.compile(optimizer = adam_v2.Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy',dice_coef,jacard, tf.keras.metrics.AUC(), tf.keras.metrics.MeanIoU(num_classes=2),
                                                                                         tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
     #print(model.summary()
 

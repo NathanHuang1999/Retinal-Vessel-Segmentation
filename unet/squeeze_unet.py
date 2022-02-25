@@ -4,7 +4,7 @@ import tensorflow as tf
 from keras.models import *
 from keras.layers import *
 
-from keras.optimizers import Adam, SDG
+from keras.optimizers import adam_v2
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras import backend as K
 from tensorflow.keras.models import load_model as load_initial_model
@@ -82,7 +82,7 @@ def SqueezeUNet(inputs, num_classes=None, deconv_ksize=3, dropout=0.5, activatio
     x = Conv2D(num_classes, (1, 1), activation=activation)(x)
     model = Model(inputs, x)
     #model.summary()
-    model.compile(optimizer=Adam(lr = 1e-4), loss=binary_crossentropy, \
+    model.compile(optimizer=adam_v2.Adam(lr = 1e-4), loss=binary_crossentropy, \
                   metrics = ['accuracy',dice_coef,jacard,tf.keras.metrics.MeanIoU(num_classes=2),\
                              tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
 
