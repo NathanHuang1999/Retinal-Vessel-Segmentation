@@ -520,38 +520,46 @@ def zoom(zoom_amount, input_path, output_path, image_count):
   print("Zoom results were saved given directory.")
 
 
-def rotation(degree, input_path, output_path, image_count):
+def rotation(degree, seed, input_path, output_path):
   images = []
   labels = []
 
-  for img_path in range(image_count):
-    img = imageio.imread(input_path + '/images/' + str(img_path) + '.png')
-    images.append(img) 
+  img_dir = input_path + "/images/"
+  lbl_dir = input_path + "/labels/"
 
-    lbl = imageio.imread(input_path + '/labels/' + str(img_path) + '.png')
-    labels.append(lbl)
+  for img_name in os.listdir(img_dir):
+      img = imageio.imread(img_dir+img_name)
+      images.append(img)
+
+  for lbl_name in os.listdir(lbl_dir):
+      lbl = imageio.imread(lbl_dir+lbl_name)
+      labels.append(lbl)
   
-  seq = iaa.Sequential(
+  seq_1 = iaa.Sequential(
       [
-
-          iaa.Rotate((degree)),
-
+          iaa.Rotate(rotate=degree, seed=seed),
       ]
   )
 
-  images_aug = seq(images=images)
-  labels_aug = seq(images=labels)
+  seq_2 = iaa.Sequential(
+      [
+          iaa.Rotate(rotate=degree, seed=seed),
+      ]
+  )
 
-  path = os.path.join(output_path, 'images') 
+  images_aug = seq_1(images=images)
+  labels_aug = seq_2(images=labels)
+
+  path = output_path + '/images/'
   os.mkdir(path) 
 
-  path = os.path.join(output_path, 'labels') 
+  path = output_path + '/labels/'
   os.mkdir(path)
 
   for indx, i in enumerate(images_aug):
-      imageio.imwrite(output_path + '/images/'  + 'rotat'+ '_' + str(indx) + '.png', i)
+      imageio.imwrite(output_path + '/images/'  + 'rotat'+ '_' + str(degree[0]) + "_" + str(degree[1]) + "_" + str(indx) + '.png', i)
 
   for indx, i in enumerate(labels_aug):
-      imageio.imwrite(output_path + '/labels/'  + 'rotat'+ '_' + str(indx) + '.png', i)
+      imageio.imwrite(output_path + '/labels/'  + 'rotat'+ '_' + str(degree[0]) + "_" + str(degree[1]) + "_" + str(indx) + '.png', i)
 
   print("Rotation results were saved given directory.")
