@@ -110,7 +110,7 @@ def aug_blurring(input_path, output_path, blurr:list):
     transformer = transformerGenerator(PROBLEM)
 
     for ker in blurr:
-        blur = createTechnique("blurring", {"kernel" : ker})
+        blur = createTechnique("blurring", {"ksize" : ker})
         augmentor.addTransformer(transformer(blur))
         print("Blurring for kernel = {} is done".format(ker))
 
@@ -298,16 +298,20 @@ def albumentation(output_folder_name, main_path, original_height, original_width
   print("Results are saved in output directory.")
 
 
-def shiftX(shift_amount, input_path, output_path, image_count):
+def shiftX(shift_amount, input_path, output_path):
   images = []
   labels = []
 
-  for img_path in range(image_count):
-    img = imageio.imread(input_path + '/images/' + str(img_path) + '.png')
-    images.append(img) 
+  img_dir = input_path + "/images/"
+  lbl_dir = input_path + "/labels/"
 
-    lbl = imageio.imread(input_path + '/labels/' + str(img_path) + '.png')
-    labels.append(lbl)
+  for img_name in os.listdir(img_dir):
+      img = imageio.imread(img_dir + img_name)
+      images.append(img)
+
+  for lbl_name in os.listdir(lbl_dir):
+      lbl = imageio.imread(lbl_dir + lbl_name)
+      labels.append(lbl)
   
   seq = iaa.Sequential(
     [
@@ -320,10 +324,10 @@ def shiftX(shift_amount, input_path, output_path, image_count):
   images_aug = seq(images=images)
   labels_aug = seq(images=labels)
 
-  path = os.path.join(output_path, 'images') 
-  os.mkdir(path) 
+  path = output_path + '/images/'
+  os.mkdir(path)
 
-  path = os.path.join(output_path, 'labels') 
+  path = output_path + '/labels/'
   os.mkdir(path)
 
   for indx, i in enumerate(images_aug):
@@ -481,16 +485,21 @@ def shearY(shear_amount, input_path, output_path, image_count):
 
   print("Shear results were saved given directory.")
 
-def zoom(zoom_amount, input_path, output_path, image_count):
+def zoom(zoom_amount, input_path, output_path):
   images = []
   labels = []
-  ia.seed(1)
-  for img_path in range(image_count):
-    img = imageio.imread(input_path + '/images/' + str(img_path) + '.png')
-    images.append(img) 
 
-    lbl = imageio.imread(input_path + '/labels/' + str(img_path) + '.png')
-    labels.append(lbl)
+  img_dir = input_path + "/images/"
+  lbl_dir = input_path + "/labels/"
+
+  ia.seed(1)
+  for img_name in os.listdir(img_dir):
+      img = imageio.imread(img_dir + img_name)
+      images.append(img)
+
+  for lbl_name in os.listdir(lbl_dir):
+      lbl = imageio.imread(lbl_dir + lbl_name)
+      labels.append(lbl)
   
   seq = iaa.Sequential(
       [
@@ -505,10 +514,10 @@ def zoom(zoom_amount, input_path, output_path, image_count):
   images_aug = seq(images=images)
   labels_aug = seq(images=labels)
 
-  path = os.path.join(output_path, 'images') 
-  os.mkdir(path) 
+  path = output_path + '/images/'
+  os.mkdir(path)
 
-  path = os.path.join(output_path, 'labels') 
+  path = output_path + '/labels/'
   os.mkdir(path)
 
   for indx, i in enumerate(images_aug):
