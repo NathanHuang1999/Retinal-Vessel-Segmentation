@@ -43,3 +43,30 @@ def mean_dice(true_path, pred_path):
         print(a)
         sum += a
     return sum/len(os.listdir(true_path))
+
+def compute_confusion_matrix(y_pred, y_true):
+
+    assert y_pred.shape == y_true.shape
+
+    y_true = np.asarray(y_true).astype(np.bool)
+    y_pred = np.asarray(y_pred).astype(np.bool)
+
+    tp = np.sum((y_true == True) & (y_pred == True))
+    fp = np.sum((y_true == False) & (y_pred == True))
+    tn = np.sum((y_true == False) & (y_pred == False))
+    fn = np.sum((y_true == True) & (y_pred == False))
+
+    return tp, fp, tn, fn
+
+def compute_iou(y_pred, y_true):
+
+    assert y_pred.shape == y_true.shape
+
+    y_true = np.asarray(y_true).astype(np.bool)
+    y_pred = np.asarray(y_pred).astype(np.bool)
+
+    intersection = np.sum(y_true & y_pred)
+    union = np.sum(y_true | y_pred)
+
+    return intersection, union
+
