@@ -1,29 +1,30 @@
-import os, argparse, shutil, cv2, pickle, time, logging, gc, json
+import cv2
+import logging
+import os
+import pickle
+import shutil
 
 logging.disable(logging.WARNING)
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-import skimage.io as io
-import skimage.transform as trans
 import matplotlib.pyplot as plt
-import tensorflow as tf
-import numpy as np
 
-from keras.preprocessing.image import ImageDataGenerator
-from keras.models import *
-from keras.layers import *
-from keras.optimizers import *
-from keras.callbacks import ModelCheckpoint, LearningRateScheduler
-from keras import backend as keras
-from tensorflow.keras.models import load_model as load_initial_model
-
+# from keras.preprocessing.image import ImageDataGenerator
+from keras.callbacks import ModelCheckpoint
 
 from unet.attention_unet import AttentionUNet
 from unet.vanilla_unet import UNet
-from utils.metrics import dice, mean_dice
-from utils.preprocess import adjustData, pad, crop, threshold
+from utils.metrics import mean_dice
+from utils.preprocess import pad, crop, threshold
 from utils.file import get_dirs, set_order, saveResult_drive, saveResult
 from data.generators import trainGenerator, testGenerator, testGenerator2
+
+import tensorflow as tf
+
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras.mixed_precision import experimental as mixed_precision
+
 
 dirs = get_dirs()
 LOG_PATH     = dirs["files"][0]["LOG_PATH"]
@@ -49,6 +50,10 @@ KFOLD_TEMP_TEST   = dirs["files"][0]["KFOLD_TEMP_TEST"]
 LOG_PATH_K        = dirs["files"][0]["LOG_PATH_KFOLD"]
 CKPTS_PATH        = dirs["files"][0]["CKPTS_PATH_KFOLD"]
 RESULTS_PATH      = dirs["files"][0]["RESULTS_PATH_KFOLD"]
+
+
+policy = mixed_precision.Policy('mixed_float16')
+mixed_precision.set_policy(policy)
 
 
 def train_once(save_name, num_train, num_test, initial_model_path,\
